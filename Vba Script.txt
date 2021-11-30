@@ -1,0 +1,71 @@
+Option Explicit
+Sub formatsheet()
+'Define Variables
+Dim Raw As Object
+Dim Dest As Object
+Dim RawRow As Long
+Dim NewRow As Long
+Dim Size() As String
+Dim HKD As String
+Dim USD As String
+
+
+'Add Worksheet
+Worksheets.Add before:=ActiveWorkbook.Worksheets(1)
+Worksheets(1).Select
+Worksheets(1).Name = "Formatted" & Worksheets(2).Name
+
+Set Dest = Worksheets(1)
+Set Raw = Worksheets(2)
+
+NewRow = 2
+
+Dest.Columns.Range("A:B").NumberFormat = "0.00"
+Dest.Columns.Range("D:F").NumberFormat = "0.00"
+Dest.Columns.Range("C:C").NumberFormat = "@"
+'Define Values
+For RawRow = 2 To Raw.UsedRange.Rows.Count
+    Size = Split(Raw.Range("B" & RawRow).Value, "-")
+    HKD = Raw.Range("D" & RawRow).Value
+    USD = Raw.Range("E" & RawRow).Value
+    
+    Dest.Range("A" & NewRow).Value = Replace(Replace(Size(0), "sq. ft.", ""), " ", "")
+    Dest.Range("B" & NewRow).Value = Replace(Replace(Size(1), "m2", ""), " ", "")
+    Dest.Range("C" & NewRow).Value = Raw.Range("C" & RawRow).Value
+    Dest.Range("D" & NewRow).Value = Replace(Replace(Replace(HKD, "$", ""), "HKD", ""), " ", "")
+    Dest.Range("E" & NewRow).Value = Replace(Replace(Replace(USD, "$", ""), "USD", ""), " ", "")
+    Dest.Range("F" & NewRow).Value = Dest.Range("D" & NewRow).Value / Dest.Range("A" & NewRow).Value
+    
+    NewRow = NewRow + 1
+    Next RawRow
+
+   
+
+
+Dest.Range("A1").Value = "Size(sq.ft)"
+
+Dest.Range("B1").Value = "Size(m2)"
+
+Dest.Range("C1").Value = "Location"
+
+Dest.Range("D1").Value = "Price(HKD)"
+
+Dest.Range("E1").Value = "Price(USD)"
+
+Dest.Range("F1").Value = "HKD/sq.ft"
+
+
+Dest.Range("A2 : F" & Dest.UsedRange.Rows.Count).Sort Key1:=Range("D2:D" & Dest.UsedRange.Rows.Count), order1:=xlDescending, Header:=xlNo
+
+
+
+
+
+
+
+End Sub
+
+
+
+
+
